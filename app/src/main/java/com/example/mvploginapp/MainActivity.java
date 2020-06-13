@@ -7,15 +7,23 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements LoginView{
 
     EditText name,pasword;
     Button loginbtn;
+
+    LoginPresenter presenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        presenter=new LoginPresenterImpl(this);
+
         name=findViewById(R.id.emailId);
         pasword=findViewById(R.id.passwordId);
         loginbtn=findViewById(R.id.buttonId);
@@ -25,43 +33,17 @@ public class MainActivity extends AppCompatActivity implements LoginView{
         loginbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                validateUser();
+                presenter.onHandleLogin(name.getText().toString(),pasword.getText().toString());
             }
         });
     }
 
-    public void validateUser()
-    {
-        String username=name.getText().toString();
-        String userpassword=pasword.getText().toString();
-        View focusView=null;
-        boolean cancel=false;
-        if(TextUtils.isEmpty(username))
-        {
-            name.setError("enter name");
-            cancel=true;
-            focusView=name;
-            return;
-        }else if(TextUtils.isEmpty(userpassword))
-        {
-            pasword.setError("enter password");
-            cancel=true;
-            focusView=pasword;
-            return;
-        }
-        if (cancel)
-        {
-            focusView.requestFocus();
-        }else
-        {
-            Intent intent=new Intent(MainActivity.this,HomeActivity.class);
-            startActivity(intent);
-        }
-    }
+   
 
     @Override
     public void onSuccess() {
-
+        Intent intent=new Intent(MainActivity.this,HomeActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -71,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements LoginView{
 
     @Override
     public void onError(String errorMessage) {
-
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 
 
